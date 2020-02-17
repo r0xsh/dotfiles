@@ -1,5 +1,6 @@
 #!/bin/bash
 
+notify-send "DUNST_COMMAND_PAUSE"
 IMAGE=/tmp/i3lock.png
 SCREENSHOT="scrot $IMAGE"
 
@@ -9,3 +10,4 @@ $SCREENSHOT
 convert $IMAGE -blur $BLURTYPE $IMAGE
 i3lock -i $IMAGE
 rm $IMAGE
+notify-send "DUNST_COMMAND_RESUME"
