@@ -52,10 +52,10 @@ bindsym Print exec scrot -q 100
 bindsym Mod4+Shift+q exec tmux_dmenu
 ### Sound ###
 # Raise Volume
-bindsym XF86AudioRaiseVolume exec --no-startup-id pulseaudio-ctl up
+bindsym XF86AudioRaiseVolume exec --no-startup-id pulseaudio-ctl up && $HOME/.local/bin/volume.sh
 # Lower Volume
-bindsym XF86AudioLowerVolume exec --no-startup-id pulseaudio-ctl down
-bindsym XF86AudioMute exec --no-startup-id pulseaudio-ctl mute
+bindsym XF86AudioLowerVolume exec --no-startup-id pulseaudio-ctl down && $HOME/.local/bin/volume.sh
+bindsym XF86AudioMute exec --no-startup-id pulseaudio-ctl mute && $HOME/.local/bin/volume.sh
 
 # Use Mouse+Mod4 to drag floating windows to their wanted position
 floating_modifier Mod4

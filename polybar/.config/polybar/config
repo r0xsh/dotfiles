@@ -97,6 +97,7 @@ label-urgent-padding = 1
 type = custom/script
 exec = $HOME/.config/scripts/docker_count.sh
 format-prefix = " "
+; 
 label-underline = #9aedfe
 label-padding = 1
 
@@ -104,7 +105,7 @@ label-padding = 1
 type = custom/script
 exec = $HOME/.config/scripts/k8s_ctx.sh
 format = %{A3:$HOME/.config/scripts/k8s_ctx.sh gui:}<label>%{A}
-format-prefix = " "
+format-prefix = " "
 label-underline = #326de6
 label-padding = 1
 
