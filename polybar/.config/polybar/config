@@ -1,28 +1,24 @@
-[colors]
-background = #282a36
-foreground = #f2f2f2
-foreground-alt = #f2f2f2
-
 [global/wm]
 margin-top = 0
 
 [bar/alt]
+include-file = $HOME/.config/polybar/polybar/themes/mocha.ini
 monitor = ${env:MONITOR:HDMI-1}
 width = 100%
 height = 28px
 fixed-center = true
 bottom = true
 
-background = ${colors.background}
-foreground = ${colors.foreground}
+background = ${colors.base}
+foreground = ${colors.text}
 
 border-size = 0
 line-size = 2
 padding = 1
 module-margin = 1
 
-font-0 = "DejaVu Sans Mono for Powerline:size=10;1"
-font-1 = "Font Awesome 5 Free Solid:size=10;1"
+font-0 = "DejaVu Sans Mono:size=10;1"
+font-1 = "Font Awesome 6 Free Solid:size=10;1"
 
 modules-left = i3
 modules-center = date
@@ -36,20 +32,22 @@ height = 28px
 fixed-center = true
 bottom = true
 
-background = ${colors.background}
-foreground = ${colors.foreground}
+enable-ipc = true
+
+background = ${colors.base}
+foreground = ${colors.text}
 
 border-size = 0
 line-size = 2
 padding = 1
 module-margin = 1
 
-font-0 = "DejaVu Sans Mono for Powerline:size=10;1"
-font-1 = "Font Awesome 5 Free Solid:size=10;1"
+font-0 = "DejaVu Sans Mono:size=10;1"
+font-1 = "Font Awesome 6 Free Solid:size=10;1"
 
-modules-left = i3
-modules-center = date
-modules-right = memory cpu temperature kubernetes docker pulseaudio battery
+modules-left = i3 xwindow
+modules-center = date privacyguard
+modules-right = fs memory cpu backlight pulseaudio battery
 
 tray-position = right
 tray-padding = 2
@@ -61,10 +59,10 @@ label = %title:0:30:...%
 
 [module/pulseaudio]
 type = internal/pulseaudio
-format-volume = %{A3:$HOME/.config/scripts/sound_swap.sh gui:}<ramp-volume> <label-volume>%{A}
-label-muted = %{A3:$HOME/.config/scripts/sound_swap.sh gui:} muted%{A}
-label-muted-foreground = #666
-label-volume-underline = #ff92d0
+format-volume = <ramp-volume> <label-volume>
+label-muted =  muted
+label-muted-foreground = ${colors.surface2}
+label-volume-underline = ${colors.pink}
 
 ramp-volume-0 = 
 ramp-volume-1 = 
@@ -77,20 +75,20 @@ index-sort = true
 enable-scroll = false
 
 label-focused = %index%
-label-focused-foreground = #f8f8f2
-label-focused-background = #282a36
-label-focused-underline = #50fa7b
+label-focused-foreground = ${colors.text} 
+label-focused-background = ${colors.crust}
+label-focused-underline = ${colors.green}
 label-focused-padding = 1
 
 label-visible = %index%
-label-visible-underline = #caa9fa
+label-visible-underline = ${colors.crust}
 label-visible-padding = 1
 
 label-unfocused = %index%
 label-unfocused-padding = 1
 
 label-urgent = %index%
-label-urgent-underline = #ff5555
+label-urgent-underline = ${colors.red}
 label-urgent-padding = 1
 
 [module/docker]
@@ -111,28 +109,31 @@ label-padding = 1
 
 [module/cpu]
 type = internal/cpu
-interval = 2
+interval = 0.5
 format-prefix = " "
-format-prefix-foreground = ${colors.foreground-alt}
-label-underline = #ff6e67
+format-prefix-foreground = ${colors.subtext2}
+label-underline = ${colors.red}
 label = %percentage%%
 
 [module/memory]
 type = internal/memory
-interval = 2
+interval = 0.5
 format-prefix = " "
-format-prefix-foreground = ${colors.foreground-alt}
-label-underline = #5af78e
-label = %percentage_used%%
+format-prefix-foreground = ${colors.subtext2}
+label-underline = ${colors.teal}
+label = %percentage_used%% (%used%)
 
 [module/temperature]
 type = internal/temperature
 thermal-zone = 0
-hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input
-base-temperature = 20
-warn-temperature = 60
+hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon8/temp1_input
 format-prefix = " "
 label-underline = #f1fa8c
+
+[module/privacyguard]
+type = custom/ipc
+hook-0 = $HOME/.config/scripts/privacyguard.sh
+initial = 1
 
 [module/date]
 type = internal/date
@@ -145,13 +146,14 @@ time = %H:%M
 time-alt = %H:%M
 
 format-prefix =
-format-prefix-foreground = ${colors.foreground-alt}
-format-underline = #9aedfe
+format-prefix-foreground = ${colors.subtext2}
+format-underline = ${colors.lavender}
 
 label = %date% %time%
 
 [module/battery]
 type = internal/battery
+time-format = %H:%M 
 battery = BAT0
 adapter = AC
 full-at = 98
@@ -166,12 +168,11 @@ ramp-capacity-0 = 
 ramp-capacity-1 = 
 ramp-capacity-2 = 
 ramp-capacity-3 = 
-ramp-capacity-foreground = ${colors.foreground-alt}
+ramp-capacity-foreground = ${colors.subtext2}
 
-label-charging = ⚡ %percentage%%
-label-discharging = %percentage%%
+label-charging = ⚡ %percentage%% (%time% @ %consumption%w)
+label-discharging = %percentage%% (%time% @ %consumption%w)
 label-full = ""
-label-underline = #f1fa8c
 
 
 [module/wired-network]
@@ -181,8 +182,19 @@ label-connected = %local_ip% %upspeed% - %downspeed%
 
 [module/wireless-network]
 type = internal/network
-interface = wlo1
+interface = wlan0
 label-connected = %essid%(%signal%) %upspeed% - %downspeed%
+
+[module/backlight]
+type = internal/backlight
+card = intel_backlight
+use-actual-brightness = true
+enable-scroll = true
+
+[module/fs]
+type = internal/fs
+mount-0 = /home
+label-mounted = %free%
 
 [settings]
 screenchange-reload = true
