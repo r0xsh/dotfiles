@@ -1,0 +1,122 @@
+#!/bin/env bash
+
+# Configuration
+LSP_DEST="$HOME/.config/nvim/lsp"
+BASE_URL="https://raw.githubusercontent.com/neovim/nvim-lspconfig/master/lsp"
+API_URL="https://api.github.com/repos/neovim/nvim-lspconfig/contents/lsp"
+
+# Ensure dependencies are met
+for cmd in fzf jq curl; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "Error: $cmd is not installed."
+        exit 1
+    fi
+done
+
+# Ensure the destination directory exists
+mkdir -p "$LSP_DEST"
+
+# --- Helper Functions ---
+
+# Fetches the list of all available LSPs from the GitHub repository
+fetch_remote_list() {
+    echo "Fetching available LSPs from repository..." >&2
+    curl -s "$API_URL" | jq -r '.[].name' | grep '\.lua$' | sed 's/\.lua//'
+}
+
+# Lists LSPs already installed in the local directory
+fetch_local_list() {
+    ls "$LSP_DEST" | grep '\.lua$' | sed 's/\.lua//'
+}
+
+download_config() {
+    local lang=$1
+    local temp=$2
+    echo "Downloading $lang configuration..."
+    HTTP_CODE=$(curl -s -o "$temp" -w "%{http_code}" "${BASE_URL}/${lang}.lua")
+
+    if [ "$HTTP_CODE" -ne 200 ]; then
+        echo "Error: Could not find LSP config for '$lang' (HTTP $HTTP_CODE)"
+        return 1
+    fi
+    return 0
+}
+
+# --- Core Actions ---
+
+install_lsp() {
+    local lang=$1
+    # If no lang provided, trigger fzf with remote list
+    if [ -z "$lang" ]; then
+        lang=$(fetch_remote_list | fzf --header="Select LSP to Install")
+    fi
+
+    [ -z "$lang" ] && return # Exit if fzf was cancelled
+
+    local target="$LSP_DEST/${lang}.lua"
+    if [ -f "$target" ]; then
+        echo "LSP config for $lang already exists. Use 'update' to merge changes."
+        return
+    fi
+
+    local temp=$(mktemp)
+    if download_config "$lang" "$temp"; then
+        mv "$temp" "$target"
+        echo "Successfully installed: $target"
+    fi
+}
+
+update_lsp() {
+    local lang=$1
+    # If no lang provided, trigger fzf with local list
+    if [ -z "$lang" ]; then
+        lang=$(fetch_local_list | fzf --header="Select LSP to Update")
+    fi
+
+    [ -z "$lang" ] && return # Exit if fzf was cancelled
+
+    local target="$LSP_DEST/${lang}.lua"
+    if [ ! -f "$target" ]; then
+        echo "No local config found for $lang. Installing fresh..."
+        install_lsp "$lang"
+        return
+    fi
+
+    local temp=$(mktemp)
+    if download_config "$lang" "$temp"; then
+        if cmp -s "$target" "$temp"; then
+            echo "Config for $lang is already up to date."
+            rm -f "$temp"
+        else
+            echo "Conflict/Changes detected in $lang. Merging with git markers..."
+            local empty_base=$(mktemp)
+            git merge-file -p "$target" "$empty_base" "$temp" > "${target}.tmp"
+            mv "${target}.tmp" "$target"
+            rm -f "$empty_base" "$temp"
+            echo "Update applied to $target. Resolve markers if necessary."
+        fi
+    fi
+}
+
+# --- Argument Logic ---
+
+ACTION=$1
+LANG_NAME=$2
+
+case "$ACTION" in
+    install)
+        install_lsp "$LANG_NAME"
+        ;;
+    update)
+        update_lsp "$LANG_NAME"
+        ;;
+    *)
+        # If the first arg is not "install" or "update", check if it's a language
+        if [ -n "$ACTION" ]; then
+            install_lsp "$ACTION"
+        else
+            # Default behavior if no args at all: Install with list
+            install_lsp
+        fi
+        ;;
+esac

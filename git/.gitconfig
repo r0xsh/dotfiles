@@ -1,0 +1,45 @@
+[user]
+	email = contact@antoinebagnaud.me
+	name = Antoine Bagnaud
+	editor = nvim
+	signingkey = 6EB90DCA9D338118698D38E4FFE62293790E1D11
+
+[push]
+	autoSetupRemote = true
+
+[commit]
+	gpgsign = true
+	verbose = true
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[init]
+	defaultBranch = master
+
+[rerere]
+	enabled = true
+
+[help]
+	autocorrect = 1
+
+[transfer]
+	fsckobjects = true
+
+[fetch]
+	fsckobjects = true
+
+[receive]
+	fsckobjects = true
+
+[branch]
+	sort = -committerdate
+
+[merge]
+    conflictstyle = zdiff3
+
+[includeIf "gitdir:~/Projects/alt/"]
+    path = ~/.gitconfig-alt

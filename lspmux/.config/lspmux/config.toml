@@ -1,0 +1,10 @@
+instance_timeout = 600
+
+gc_interval = 15
+
+listen = "/run/user/1000/lspmux.sock"
+connect = "/run/user/1000/lspmux.sock"
+
+log_filters = "info"
+
+pass_environment = ["PATH"]
