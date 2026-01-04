@@ -28,7 +28,9 @@ autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter', 'WinLeave' }, {
     desc = 'Show cursorline only in the current focused buffer',
     pattern = '*',
     callback = function(args)
-        vim.wo.cursorline = args.event ~= 'WinLeave'
+        local enter_in_buffer = args.event ~= 'WinLeave'
+        vim.wo.cursorline = enter_in_buffer
+        vim.wo.relativenumber = enter_in_buffer
     end,
 })
 
@@ -105,4 +107,35 @@ autocmd({ 'FocusGained', 'BufEnter' }, {
     group = augroup('r0xshCheckForExternalChange'),
     pattern = { '*' },
     command = 'checktime',
+})
+
+-- @see https://github.com/folke/snacks.nvim/blob/main/docs/rename.md#netrw-builtin-file-explorer
+autocmd({ 'FileType' }, {
+    pattern = { 'netrw' },
+    group = augroup('r0xshNetrwOnRename'),
+    callback = function()
+        vim.keymap.set('n', 'R', function()
+            local original_file_path = vim.b.netrw_curdir .. '/' .. vim.fn['netrw#Call']('NetrwGetWord')
+
+            vim.ui.input({ prompt = 'Move/rename to:', default = original_file_path }, function(target_file_path)
+                if target_file_path and target_file_path ~= '' then
+                    local file_exists = vim.uv.fs_access(target_file_path, 'W')
+
+                    if not file_exists then
+                        vim.uv.fs_rename(original_file_path, target_file_path)
+
+                        require('snacks').rename.on_rename_file(original_file_path, target_file_path)
+                    else
+                        vim.notify(
+                            "File '" .. target_file_path .. "' already exists! Skipping...",
+                            vim.log.levels.ERROR
+                        )
+                    end
+
+                    -- Refresh netrw
+                    vim.cmd(':Ex ' .. vim.b.netrw_curdir)
+                end
+            end)
+        end, { remap = true, buffer = true })
+    end,
 })

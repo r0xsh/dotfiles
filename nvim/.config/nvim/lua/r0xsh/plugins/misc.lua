@@ -108,4 +108,12 @@ return {
             vim.keymap.set('n', '<C-w><Right>', require('smart-splits').move_cursor_right)
         end,
     },
+    {
+        'folke/snacks.nvim',
+        priority = 1000,
+        lazy = false,
+        opts = {
+            quickfile = { enabled = true },
+        },
+    },
 }
