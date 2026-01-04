@@ -18,3 +18,11 @@ map('v', '<leader>be', ":!tr -d '\\n' | base64 -w 0<CR>", { desc = 'Base64 Encod
 
 -- Decode: Standard decode
 map('v', '<leader>bd', ':!base64 -d<CR>', { desc = 'Base64 Decode' })
+
+map('n', '<leader>n', function()
+    Snacks.words.jump(vim.v.count1)
+end, { noremap = true, silent = true })
+
+map('n', '<leader>p', function()
+    Snacks.words.jump(-vim.v.count1)
+end, { noremap = true, silent = true })

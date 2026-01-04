@@ -124,7 +124,7 @@ autocmd({ 'FileType' }, {
                     if not file_exists then
                         vim.uv.fs_rename(original_file_path, target_file_path)
 
-                        require('snacks').rename.on_rename_file(original_file_path, target_file_path)
+                        Snacks.rename.on_rename_file(original_file_path, target_file_path)
                     else
                         vim.notify(
                             "File '" .. target_file_path .. "' already exists! Skipping...",

@@ -3,5 +3,5 @@ vim.api.nvim_create_user_command('LspmuxStatus', function()
 end, { desc = 'Open lspmux status in a new terminal tab' })
 
 vim.api.nvim_create_user_command('RenameFile', function()
-    require('snacks').rename.rename_file()
+    Snacks.rename.rename_file()
 end, { desc = 'Rename current file with LSP support' })

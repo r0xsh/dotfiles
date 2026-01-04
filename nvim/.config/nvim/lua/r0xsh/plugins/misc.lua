@@ -114,6 +114,7 @@ return {
         lazy = false,
         opts = {
             quickfile = { enabled = true },
+            words = {},
         },
     },
 }
