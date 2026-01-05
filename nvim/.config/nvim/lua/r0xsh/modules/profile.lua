@@ -2,6 +2,16 @@ local default_config = {
     enable_treesitter = true,
     lsp = { enabled = true, use_lspmux = true },
     shell = 'zsh',
+    root_markers = {
+        '.git',
+        'README.md',
+        'Makefile',
+        'LICENSE',
+        'compose.yml',
+        'docker-compose.yml',
+        'package.json',
+        'composer.json',
+    },
 }
 
 local profile_configs = {

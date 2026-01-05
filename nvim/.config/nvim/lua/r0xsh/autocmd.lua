@@ -1,6 +1,8 @@
 -- FIXME: Should get rid of `opt_local`
 -- See: https://github.com/neovim/neovim/issues/20451
 
+local p = require('r0xsh.modules.profile').config
+
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = function(group)
     return vim.api.nvim_create_augroup(group, { clear = true })
@@ -67,7 +69,6 @@ autocmd('LspAttach', {
     end,
 })
 
--- NOTE: Considering using `BufReadPost` event instead.
 autocmd('VimEnter', {
     group = augroup('r0xshFindWorkdir'),
     desc = 'Automatically find working directory and cd to it',
@@ -77,20 +78,8 @@ autocmd('VimEnter', {
             return
         end
 
-        local root_hint = {
-            '.git',
-            'README.md',
-            'Makefile',
-            'LICENSE',
-            'compose.yml',
-            'docker-compose.yml',
-            'package.json',
-            'composer.json',
-            'mix.exs',
-        }
-
         -- TODO: Maybe accessing .[1] will cause trouble
-        local root = vim.fs.find(root_hint, {
+        local root = vim.fs.find(p.root_markers, {
             path = path,
             upward = true,
             stop = vim.uv.os_homedir(),

@@ -1,6 +1,11 @@
+local p = require('r0xsh.modules.profile').config
+
 -- Prepend Mason bin to Neovim's PATH
 local mason_bin = require('r0xsh.modules.utils').get_mason_bin_path()
 vim.env.PATH = mason_bin .. ':' .. vim.env.PATH
+
+-- Use my custom root markers for lsp
+vim.lsp.config('*', { root_markers = p.root_markers })
 
 -- List all lsp config files then **enable** them.
 vim.schedule(function()
