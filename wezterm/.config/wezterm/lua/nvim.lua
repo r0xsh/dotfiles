@@ -17,7 +17,7 @@ local function forward_to_vim(win, pane, key)
 end
 
 -- Helper function to handle the logic
-function M.cmd_w_action(key, wezterm_action)
+function M.cmd_w_action(key, wezterm_action, use_fingerprint)
     return {
         key = key,
         mods = 'LEADER',
@@ -25,6 +25,11 @@ function M.cmd_w_action(key, wezterm_action)
             -- 1. Explicit Vim pane -> always forward
             if is_vim(pane) then
                 forward_to_vim(win, pane, key)
+                return
+            end
+
+            if not use_fingerprint then
+                win:perform_action(wezterm_action, pane)
                 return
             end
 

@@ -51,19 +51,20 @@ local keys = {
     { key = 'PageDown', mods = 'SHIFT', action = act.ScrollByPage(0.75) },
 
     -- Navigation
-    nvim.cmd_w_action('h', act.ActivatePaneDirection('Left')),
-    nvim.cmd_w_action('j', act.ActivatePaneDirection('Down')),
-    nvim.cmd_w_action('k', act.ActivatePaneDirection('Up')),
-    nvim.cmd_w_action('l', act.ActivatePaneDirection('Right')),
+    nvim.cmd_w_action('h', act.ActivatePaneDirection('Left'), true),
+    nvim.cmd_w_action('j', act.ActivatePaneDirection('Down'), true),
+    nvim.cmd_w_action('k', act.ActivatePaneDirection('Up'), true),
+    nvim.cmd_w_action('l', act.ActivatePaneDirection('Right'), true),
 
-    nvim.cmd_w_action('LeftArrow', act.ActivatePaneDirection('Left')),
-    nvim.cmd_w_action('DownArrow', act.ActivatePaneDirection('Down')),
-    nvim.cmd_w_action('UpArrow', act.ActivatePaneDirection('Up')),
-    nvim.cmd_w_action('RightArrow', act.ActivatePaneDirection('Right')),
+    nvim.cmd_w_action('LeftArrow', act.ActivatePaneDirection('Left'), true),
+    nvim.cmd_w_action('DownArrow', act.ActivatePaneDirection('Down'), true),
+    nvim.cmd_w_action('UpArrow', act.ActivatePaneDirection('Up'), true),
+    nvim.cmd_w_action('RightArrow', act.ActivatePaneDirection('Right'), true),
 
     -- Splitting
-    nvim.cmd_w_action('s', act.SplitVertical { domain = 'CurrentPaneDomain' }, true),
-    nvim.cmd_w_action('v', act.SplitHorizontal { domain = 'CurrentPaneDomain' }, true),
+    -- FIXME: This will do funny things with SSH
+    nvim.cmd_w_action('s', act.SplitVertical { domain = 'CurrentPaneDomain' }),
+    nvim.cmd_w_action('v', act.SplitHorizontal { domain = 'CurrentPaneDomain' }),
 
     -- Closing
     nvim.cmd_w_action('q', act.CloseCurrentPane { confirm = true }),
