@@ -13,8 +13,8 @@ return {
         background = '#090E13',
 
         active_tab = {
-            bg_color = '#22262D',
-            fg_color = '#C5C9C7',
+            bg_color = '#20242B',
+            fg_color = '#C6CAC8',
             intensity = 'Normal',
             underline = 'None',
             italic = false,
