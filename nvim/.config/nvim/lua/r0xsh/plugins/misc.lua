@@ -13,24 +13,28 @@ return {
     {
         -- TODO: Rewrite this plugin or get rid of it.
         'r0xsh/garbage-day.nvim',
-        enabled = not p.lsp.use_lspmux,
+        enabled = p.lsp.enabled and not p.lsp.use_lspmux,
         event = 'VeryLazy',
         opts = {},
     },
     {
-        'vimpostor/vim-tpipeline',
-        cond = vim.fn.getenv('TMUX') ~= vim.NIL,
-    },
-    {
         'folke/ts-comments.nvim',
         event = { 'BufReadPre', 'BufNewFile' },
-        enabled = vim.fn.has('nvim-0.10.0') == 1,
         opts = {},
     },
     {
         'windwp/nvim-autopairs',
         event = 'InsertEnter',
-        opts = {},
+        config = function()
+            local npairs = require('nvim-autopairs')
+            local r = require('nvim-autopairs.ts-rule')
+            npairs.setup()
+
+            npairs.add_rules(require('nvim-autopairs.rules.endwise-lua'))
+            npairs.add_rules {
+                r.endwise(' do$', 'end', 'elixir', nil),
+            }
+        end,
     },
     {
         'nvim-mini/mini.clue',
@@ -49,7 +53,7 @@ return {
                     miniclue.gen_clues.builtin_completion(),
                     miniclue.gen_clues.g(),
                     -- miniclue.gen_clues.marks(),
-                    -- miniclue.gen_clues.registers(),
+                    miniclue.gen_clues.registers(),
                     miniclue.gen_clues.windows(),
                     -- miniclue.gen_clues.z(),
                 },
@@ -114,7 +118,7 @@ return {
         lazy = false,
         opts = {
             quickfile = { enabled = true },
-            words = {},
+            words = { enabled = p.lsp.enabled },
         },
     },
 }

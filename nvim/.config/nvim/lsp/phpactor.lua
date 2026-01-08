@@ -15,5 +15,9 @@ return {
                 PATH = vim.env.PATH,
             },
         },
+        ['language_server_worse_reflection.inlay_hints.enable'] = false,
+        ['language_server_highlight.enabled'] = false,
+        ['language_server_psalm.enabled'] = false,
+        ['language_server_psalm.bin'] = vim.fn.exepath('psalm'),
     },
 }
