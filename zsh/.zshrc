@@ -126,3 +126,4 @@ eval "$(zoxide init zsh --cmd cd)"
 
 # Set nvim as default text editor
 export EDITOR=nvim
+export PATH="$PATH:$HOME/.local/share/nvim/mason/bin:$HOME/.cargo/bin/"

@@ -1,4 +1,4 @@
-PACKAGES := nvim wezterm lspmux git
+PACKAGES := nvim wezterm lspmux git zsh
 
 STOW := stow --verbose --target=$(HOME)
 .PHONY: all unstow $(PACKAGES)
