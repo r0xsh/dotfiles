@@ -126,4 +126,9 @@ eval "$(zoxide init zsh --cmd cd)"
 
 # Set nvim as default text editor
 export EDITOR=nvim
-export PATH="$PATH:$HOME/.local/share/nvim/mason/bin:$HOME/.cargo/bin/"
+export PATH="$PATH:$HOME/.local/share/nvim/mason/bin:$HOME/.cargo/bin/:$HOME/.local/bin"
+export ANDROID_HOME=/opt/android-sdk
+export ANDROID_SDK_ROOT=/opt/android-sdk
+
+alias vim=$EDITOR
+alias v=$EDITOR

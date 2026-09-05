@@ -65,3 +65,5 @@ zmodule zsh-users/zsh-autosuggestions
 
 # Enable mise zsh integration
 zmodule joke/zim-mise
+
+zmodule archive
