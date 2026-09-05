@@ -12,7 +12,7 @@ autocmd('TextYankPost', {
     group = augroup('r0xshTextYankPost'),
     desc = 'Highlight when yanking text',
     callback = function()
-        vim.hl.on_yank()
+        vim.hl.hl_op { timeout = 180 }
     end,
 })
 
