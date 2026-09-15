@@ -31,6 +31,19 @@ return {
             }
             ts.update()
         end,
+        init = function()
+            require("vim.treesitter.query").add_predicate("is-mise?", function(_, _, bufnr, _)
+                local filepath = vim.fs.normalize(vim.api.nvim_buf_get_name(tonumber(bufnr) or 0))
+                local filename = vim.fn.fnamemodify(filepath, ":t")
+                return filename:match("^%.?mise.*%.toml$") ~= nil
+                    or filepath:match("/%.?mise/config%.toml$") ~= nil
+                    or filepath:match("/%.?mise/config%.local%.toml$") ~= nil
+                    or filepath:match("/%.?mise/config%.[^/]+%.toml$") ~= nil
+                    or filepath:match("/%.config/mise/mise%.toml$") ~= nil
+                    or filepath:match("/%.config/mise/mise%.local%.toml$") ~= nil
+                    or filepath:match("/%.?mise/conf%.d/[^/]+%.toml$") ~= nil
+            end, { force = true, all = false })
+        end,
         config = function()
             local ok, ts = pcall(require, 'nvim-treesitter')
             if not ok then
