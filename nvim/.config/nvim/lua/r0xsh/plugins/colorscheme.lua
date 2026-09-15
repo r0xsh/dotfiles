@@ -32,7 +32,14 @@ return {
     },
     {
         'bluz71/vim-moonfly-colors',
+        enabled = false,
         name = 'moonfly',
+        lazy = false,
+        priority = 1000,
+    },
+    {
+        'aikhe/fleur.nvim',
+        enabled = false,
         lazy = false,
         priority = 1000,
     },
