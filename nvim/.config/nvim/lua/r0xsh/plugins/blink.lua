@@ -4,6 +4,7 @@ return {
     {
         'saghen/blink.cmp',
         build = p.lsp.enabled and 'cargo build --release' or false,
+        version = "1.*",
         event = 'InsertEnter',
         opts = function()
             local config = {
