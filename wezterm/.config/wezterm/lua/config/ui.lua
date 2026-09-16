@@ -1,6 +1,25 @@
 local wezterm = require('wezterm')
-local colorscheme = 'kanso-zen'
+local colorscheme_dark = 'kanso-zen'
+local colorscheme_light = 'kanso-pearl'
 local font_family = 'Ioskeley Mono'
+
+-- Pick the right color table based on OS appearance (Dark/Light)
+local function scheme_for_appearance(appearance)
+    if appearance:find('Dark') then
+        return require('colors.' .. colorscheme_dark)
+    end
+    return require('colors.' .. colorscheme_light)
+end
+
+-- Initial colors for the first paint
+local initial_colors = scheme_for_appearance(wezterm.gui.get_appearance())
+
+-- Auto-switch light/dark when the system appearance changes
+wezterm.on('window-config-reloaded', function(window)
+    window:set_config_overrides {
+        colors = scheme_for_appearance(wezterm.gui.get_appearance()),
+    }
+end)
 
 return {
 
@@ -28,8 +47,8 @@ return {
     tab_max_width = 25,
     switch_to_last_active_tab_when_closing_tab = true,
 
-    -- Colors
-    colors = require('colors.' .. colorscheme),
+    -- Colors (auto-switches between dark/light based on system appearance)
+    colors = initial_colors,
     force_reverse_video_cursor = true,
 
     -- Fonts

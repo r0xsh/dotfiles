@@ -24,7 +24,7 @@ A modular WezTerm configuration with a focus on Vi-like navigation and clean UI.
 ## Main Settings
 
 ### UI & Appearance
-- **Colorscheme**: `kanso-zen`
+- **Colorscheme**: `kanso-zen` (dark) / `kanso-pearl` (light), auto-switched based on system appearance
 - **Font**: Ioskeley Mono, 12pt
 - **Window**: No padding, 60 FPS, no decorations
 - **Cursor**: Blinking block, hides when typing
