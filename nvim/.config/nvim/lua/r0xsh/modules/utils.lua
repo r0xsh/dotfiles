@@ -5,7 +5,8 @@ local p = require('r0xsh.modules.profile').config
 -- @alias M
 local M = {}
 
-M.socket = vim.env.XDG_RUNTIME_DIR .. '/lspmux.sock'
+-- `nil` when $XDG_RUNTIME_DIR is unset (containers, `env -i`, some ssh/su sessions)
+M.socket = vim.env.XDG_RUNTIME_DIR and vim.fs.joinpath(vim.env.XDG_RUNTIME_DIR, 'lspmux.sock')
 
 -- Return the path where Mason store the lsp binaries
 -- @treturn string
@@ -16,21 +17,30 @@ end
 -- Check if the lspmux socket is present
 -- @treturn boolean
 function M.is_lspmux()
-    local stat = vim.uv.fs_stat(M.socket)
-    return stat and stat.type == 'socket'
+    local stat = M.socket and vim.uv.fs_stat(M.socket)
+    return stat ~= nil and stat.type == 'socket'
 end
 
--- Set the lsp `cmd` field with lspmux rpc if present,
--- if not fallback to default config
--- @treturn function|table
+-- Build the lsp `cmd` field: go through the lspmux rpc if present,
+-- if not fallback to spawning `cmd` directly.
+-- The check runs each time a server is spawned, not once when the config is loaded.
+-- @treturn function
 function M.lspmux_cmd_fallback(cmd)
-    if p.lsp.use_lspmux and M.is_lspmux() then
-        return vim.lsp.rpc.connect(M.socket)
-    else
+    return function(dispatchers, config)
+        if p.lsp.use_lspmux and M.is_lspmux() then
+            return vim.lsp.rpc.connect(M.socket)(dispatchers)
+        end
+
         if p.lsp.use_lspmux then
             vim.notify_once('lspmux socket not detected; falling back to direct LSP command', vim.log.levels.WARN)
         end
-        return cmd
+
+        -- Same spawn options Neovim uses for a plain `cmd` list
+        return vim.lsp.rpc.start(cmd, dispatchers, {
+            cwd = config.cmd_cwd or config.root_dir,
+            env = config.cmd_env,
+            detached = config.detached,
+        })
     end
 end
 

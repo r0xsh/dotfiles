@@ -4,12 +4,22 @@ local health = {}
 
 local function lspmux_healthcheck()
     if not M.is_lspmux() then
-        return false, 'lspmux socket not found: ' .. (M.socket or 'nil')
+        return false, 'lspmux socket not found: ' .. (M.socket or '$XDG_RUNTIME_DIR is not set')
     end
 
-    local ok, err = pcall(vim.lsp.rpc.connect, M.socket)
-    if not ok then
-        return false, 'Failed to connect to lspmux socket: ' .. tostring(err)
+    -- `vim.lsp.rpc.connect()` only builds a factory, so open the socket for real
+    local pipe = assert(vim.uv.new_pipe())
+    local result ---@type string|false|nil
+    pipe:connect(M.socket, function(err)
+        result = err or false
+    end)
+    local done = vim.wait(1000, function()
+        return result ~= nil
+    end)
+    pipe:close()
+
+    if not done or result then
+        return false, 'Failed to connect to lspmux socket: ' .. tostring(result or 'timeout')
     end
 
     return true, 'lspmux is running and healthy'

@@ -35,9 +35,9 @@ return {
             },
             workspace = {
                 checkThirdParty = false,
+                -- $VIMRUNTIME also ships the luv types (lua/uv/_meta.lua)
                 library = {
                     vim.env.VIMRUNTIME,
-                    '${3rd}/luv/library',
                 },
             },
         },

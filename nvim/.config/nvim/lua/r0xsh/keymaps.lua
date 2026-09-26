@@ -13,11 +13,14 @@ map('t', '<C-w>k', [[<C-\><C-n><C-w>k]], { desc = 'Move to top window' })
 map('t', '<C-w>l', [[<C-\><C-n><C-w>l]], { desc = 'Move to right window' })
 map('t', '<C-w>q', [[<C-\><C-n>:q!<CR>]], { desc = 'Force quit terminal' })
 
--- Encode: Trims the trailing newline then encodes without wrapping
-map('v', '<leader>be', ":!tr -d '\\n' | base64 -w 0<CR>", { desc = 'Base64 Encode (Trimmed)' })
+-- NOTE: `x` and not `v`, which also covers Select mode (snippet placeholders).
+-- `:!` filters whole lines, even for a charwise selection.
+
+-- Encode: Strips all newlines (joins the lines) then encodes without wrapping
+map('x', '<leader>be', ":!tr -d '\\n' | base64 -w 0<CR>", { desc = 'Base64 Encode (Trimmed)' })
 
 -- Decode: Standard decode
-map('v', '<leader>bd', ':!base64 -d<CR>', { desc = 'Base64 Decode' })
+map('x', '<leader>bd', ':!base64 -d<CR>', { desc = 'Base64 Decode' })
 
 map('n', '<leader>n', function()
     Snacks.words.jump(vim.v.count1)

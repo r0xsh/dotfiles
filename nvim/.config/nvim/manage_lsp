@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # Configuration
 LSP_DEST="$HOME/.config/nvim/lsp"
@@ -91,9 +91,20 @@ update_lsp() {
             echo "Conflict/Changes detected in $lang. Merging with git markers..."
             local empty_base=$(mktemp)
             git merge-file -p "$target" "$empty_base" "$temp" > "${target}.tmp"
-            mv "${target}.tmp" "$target"
+            # Exit status is the number of conflicts (capped at 127), or negative on error
+            local conflicts=$?
             rm -f "$empty_base" "$temp"
-            echo "Update applied to $target. Resolve markers if necessary."
+            if [ "$conflicts" -gt 127 ]; then
+                rm -f "${target}.tmp"
+                echo "Error: git merge-file failed, $target left untouched."
+                return 1
+            fi
+            mv "${target}.tmp" "$target"
+            if [ "$conflicts" -eq 0 ]; then
+                echo "Update applied to $target."
+            else
+                echo "Update applied to $target with $conflicts conflict(s): resolve the markers before restarting Neovim."
+            fi
         fi
     fi
 }

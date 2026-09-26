@@ -48,6 +48,12 @@ return {
                     { mode = 'n', keys = 'g' },
                     { mode = 'x', keys = 'g' },
                     { mode = 'n', keys = '<C-w>' },
+                    -- Needed by `builtin_completion()` and `registers()` below
+                    { mode = 'i', keys = '<C-x>' },
+                    { mode = 'n', keys = '"' },
+                    { mode = 'x', keys = '"' },
+                    { mode = 'i', keys = '<C-r>' },
+                    { mode = 'c', keys = '<C-r>' },
                 },
                 clues = {
                     miniclue.gen_clues.builtin_completion(),

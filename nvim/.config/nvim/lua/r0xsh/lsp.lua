@@ -1,22 +1,22 @@
-local p = require('r0xsh.modules.profile').config
-
 -- Prepend Mason bin to Neovim's PATH
 local mason_bin = require('r0xsh.modules.utils').get_mason_bin_path()
 vim.env.PATH = mason_bin .. ':' .. vim.env.PATH
 
--- Use my custom root markers for lsp
-vim.lsp.config('*', { root_markers = p.root_markers })
-
 -- List all lsp config files then **enable** them.
-vim.schedule(function()
-    local lsp_dir = vim.fn.stdpath('config') .. '/lsp'
-    for file in vim.fs.dir(lsp_dir) do
-        if file:sub(-4) == '.lua' then
-            local server = vim.fn.fnamemodify(file, ':r')
-            pcall(vim.lsp.enable, server)
+-- `vim.lsp.enable()` loads the config right away: report a broken file (e.g. leftover
+-- merge markers from `manage_lsp update`) instead of silently skipping that server.
+for file in vim.fs.dir(vim.fn.stdpath('config') .. '/lsp') do
+    local server = file:match('^(.+)%.lua$')
+    if server then
+        local ok, err = pcall(vim.lsp.enable, server)
+        if not ok then
+            vim.notify(('Failed to enable %s: %s'):format(server, err), vim.log.levels.ERROR)
         end
     end
-end)
+end
+
+-- Leave highlighting to treesitter
+vim.lsp.semantic_tokens.enable(false)
 
 -- Neovim diagnostic config.
 -- @see https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.Opts

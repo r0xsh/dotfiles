@@ -4,11 +4,11 @@ return {
     {
         'saghen/blink.cmp',
         build = p.lsp.enabled and 'cargo build --release' or false,
-        version = "1.*",
-        event = 'InsertEnter',
+        version = '1.*',
+        -- Not lazy-loaded: blink registers its LSP capabilities when it loads,
+        -- so it must be up before the first server starts.
         opts = function()
             local config = {
-                appearance = { use_nvim_cmp_as_default = true },
                 keymap = { preset = 'default' },
                 completion = {
                     documentation = {

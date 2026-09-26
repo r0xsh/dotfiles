@@ -16,14 +16,11 @@ autocmd('TextYankPost', {
     end,
 })
 
-autocmd({ 'BufRead', 'BufNewFile' }, {
-    group = augroup('r0xshEdifactSyntax'),
-    desc = 'Set EDIFACT syntax for .edi files',
-    pattern = '*.edi',
-    callback = function(args)
-        vim.bo[args.buf].syntax = 'edifact'
-    end,
-})
+-- Set EDIFACT filetype for .edi files, it picks up `syntax/edifact.vim`
+vim.filetype.add { extension = { edi = 'edifact' } }
+
+-- NOTE: `vim.wo[0][0]` behaves like `:setlocal`. Plain `vim.wo` behaves like `:set` and would
+-- also change the window's global value, leaking into the next buffer opened in that window.
 
 autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter', 'WinLeave' }, {
     group = augroup('r0xshCursorLine'),
@@ -31,8 +28,11 @@ autocmd({ 'VimEnter', 'WinEnter', 'BufWinEnter', 'WinLeave' }, {
     pattern = '*',
     callback = function(args)
         local enter_in_buffer = args.event ~= 'WinLeave'
-        vim.wo.cursorline = enter_in_buffer
-        vim.wo.relativenumber = enter_in_buffer
+        vim.wo[0][0].cursorline = enter_in_buffer
+        -- Terminals keep the decorations set on `TermOpen`
+        if vim.bo[args.buf].buftype ~= 'terminal' then
+            vim.wo[0][0].relativenumber = enter_in_buffer
+        end
     end,
 })
 
@@ -40,12 +40,11 @@ autocmd('TermOpen', {
     group = augroup('r0xshTermConfig'),
     desc = 'Clean the window decorations for terminal buffers',
     callback = function()
-        vim.wo.number = false
-        vim.wo.relativenumber = false
-        vim.wo.signcolumn = 'no'
-        vim.wo.foldcolumn = '0'
+        vim.wo[0][0].number = false
+        vim.wo[0][0].relativenumber = false
+        vim.wo[0][0].signcolumn = 'no'
+        vim.wo[0][0].foldcolumn = '0'
         vim.bo.buflisted = false
-        vim.wo.signcolumn = 'no'
     end,
 })
 
@@ -60,15 +59,6 @@ autocmd('FileType', {
     end,
 })
 
--- @see https://vi.stackexchange.com/questions/43428/how-to-disable-lsp-server-syntax-highlighting
-autocmd('LspAttach', {
-    group = augroup('r0xshDisableLspHightlight'),
-    callback = function(args)
-        local client = vim.lsp.get_client_by_id(args.data.client_id)
-        client.server_capabilities.semanticTokensProvider = nil
-    end,
-})
-
 autocmd('VimEnter', {
     group = augroup('r0xshFindWorkdir'),
     desc = 'Automatically find working directory and cd to it',
@@ -78,24 +68,20 @@ autocmd('VimEnter', {
             return
         end
 
-        -- TODO: Maybe accessing .[1] will cause trouble
-        local root = vim.fs.find(p.root_markers, {
-            path = path,
-            upward = true,
-            stop = vim.uv.os_homedir(),
-        })[1]
+        -- Try the markers in priority order, so `.git` wins over a nested README.md
+        for _, marker in ipairs(p.root_markers) do
+            local root = vim.fs.find(marker, {
+                path = path,
+                upward = true,
+                stop = vim.uv.os_homedir(),
+            })[1]
 
-        if root then
-            local root_dir = vim.fs.dirname(root)
-            vim.fn.chdir(root_dir)
+            if root then
+                vim.fn.chdir(vim.fs.dirname(root))
+                return
+            end
         end
     end,
-})
-
-autocmd({ 'FocusGained', 'BufEnter' }, {
-    group = augroup('r0xshCheckForExternalChange'),
-    pattern = { '*' },
-    command = 'checktime',
 })
 
 -- @see https://github.com/folke/snacks.nvim/blob/main/docs/rename.md#netrw-builtin-file-explorer
