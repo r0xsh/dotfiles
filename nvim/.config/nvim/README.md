@@ -22,6 +22,6 @@ The script supports installing/updating individual LSP configs with conflict res
 
 ## Structure
 - `lua/r0xsh/` - Main configuration modules
-- `lua/r0xsh/plugins/` - Plugin configurations
+- `lua/r0xsh/plugins/` - Plugin configurations, installed with the builtin [`vim.pack`](https://neovim.io/doc/user/pack/) (`:packupdate`, `:packdel`) and pinned in `nvim-pack-lock.json`
 - `lsp/` - Language server configurations (managed by `manage_lsp`)
 - `syntax/` - Custom syntax highlighting

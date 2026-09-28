@@ -1,46 +1,24 @@
-return {
-    {
-        'webhooked/kanso.nvim',
-        lazy = false,
-        priority = 1000,
-        -- build = ':KansoCompile',
-        config = function()
-            require('kanso').setup {
-                -- compile = true,
-                bold = true,
-                italics = false,
-                dimInactive = false,
-                keywordStyle = { italic = false },
-                background = {
-                    dark = 'zen',
-                    light = 'pearl',
-                },
-                foreground = {
-                    dark = 'saturated',
-                    light = 'saturated',
-                },
-            }
-            vim.cmd.colorscheme('kanso')
-        end,
+local gh = require('r0xsh.modules.pack').gh
+
+-- Alternatives:
+--   gh('EdenEast/nightfox.nvim')
+--   { src = gh('bluz71/vim-moonfly-colors'), name = 'moonfly' }
+--   gh('aikhe/fleur.nvim')
+vim.pack.add { gh('webhooked/kanso.nvim') }
+
+require('kanso').setup {
+    -- compile = true, -- then run `:KansoCompile` after each update
+    bold = true,
+    italics = false,
+    dimInactive = false,
+    keywordStyle = { italic = false },
+    background = {
+        dark = 'zen',
+        light = 'pearl',
     },
-    {
-        'EdenEast/nightfox.nvim',
-        enabled = false,
-        lazy = false,
-        priority = 1000,
-        opts = {},
-    },
-    {
-        'bluz71/vim-moonfly-colors',
-        enabled = false,
-        name = 'moonfly',
-        lazy = false,
-        priority = 1000,
-    },
-    {
-        'aikhe/fleur.nvim',
-        enabled = false,
-        lazy = false,
-        priority = 1000,
+    foreground = {
+        dark = 'saturated',
+        light = 'saturated',
     },
 }
+vim.cmd.colorscheme('kanso')
